@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chunk World Simulation</title>
+    <style>
+        body {
+            background: #f0f0f0;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        #info {
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        #world {
+            display: grid;
+            grid-template-columns: repeat(5, 100px);
+            grid-template-rows: repeat(5, 100px);
+            gap: 2px;
+        }
+
+        .chunk {
+            width: 100px;
+            height: 100px;
+            background: #ccc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            font-size: 12px;
+            transition: background 0.2s ease;
+            text-align: center;
+        }
+
+        .rendered {
+            background-color: #aaddff;
+        }
+
+        .player {
+            background-color: #ffeb3b !important;
+        }
+
+        .label {
+            font-size: 11px;
+            margin: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>World Chunk Simulation (5x5)</h2>
+    <div id="info">Hover ke salah satu chunk untuk melihat koordinat dan render area 3x3</div>
+    <div id="world"></div>
+
+    <script>
+        const worldSize = 5; // 5x5 grid
+        const half = Math.floor(worldSize / 2);
+        const world = document.getElementById("world");
+
+        // Buat chunk grid dengan koordinat -2 sampai 2
+        for (let gy = -half; gy <= half; gy++) {
+            for (let gx = -half; gx <= half; gx++) {
+                const chunk = document.createElement("div");
+                chunk.className = "chunk";
+                chunk.dataset.chunkX = gx;
+                chunk.dataset.chunkY = gy;
+
+                const label1 = document.createElement("div");
+                label1.className = "label";
+                label1.textContent = `Chunk: (${gx}, ${gy})`;
+
+                const label2 = document.createElement("div");
+                label2.className = "label";
+                label2.textContent = `Coord: ${gx * 100}, ${gy * 100}`;
+
+                chunk.appendChild(label1);
+                chunk.appendChild(label2);
+
+                chunk.addEventListener("mouseenter", () => renderAround(gx, gy));
+                world.appendChild(chunk);
+            }
+        }
+
+        function renderAround(px, py) {
+            const chunks = document.querySelectorAll(".chunk");
+
+            chunks.forEach(chunk => {
+                const x = parseInt(chunk.dataset.chunkX);
+                const y = parseInt(chunk.dataset.chunkY);
+
+                chunk.classList.remove("rendered", "player");
+
+                if (Math.abs(x - px) <= 1 && Math.abs(y - py) <= 1) {
+                    chunk.classList.add("rendered");
+                }
+
+                if (x === px && y === py) {
+                    chunk.classList.add("player");
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

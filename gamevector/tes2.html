@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frustum View Simulation</title>
+    <style>
+        body {
+            background: #f0f0f0;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+
+        #info {
+            margin: 10px;
+        }
+
+        #world {
+            display: grid;
+            grid-template-columns: repeat(41, 20px);
+            grid-template-rows: repeat(41, 20px);
+            gap: 1px;
+            margin: 10px;
+        }
+
+        .tile {
+            width: 20px;
+            height: 20px;
+            background: #ccc;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .player {
+            background: yellow;
+        }
+
+        .frustum {
+            background: #4dd0e1;
+        }
+
+        .render-area {
+            background: #47c35f;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Frustum Simulation (V-Shape View + Render Area)</h2>
+    <div id="info">WASD to move. Yellow = Player, Cyan = Frustum, Blue = Render area (preloaded tiles).</div>
+    <div id="world"></div>
+
+    <script>
+        const size = 41; // grid 41x41, so center is at (20, 20)
+        const center = Math.floor(size / 2);
+        let playerX = center;
+        let playerY = center;
+        let direction = 'up'; // up, down, left, right
+
+        const world = document.getElementById("world");
+
+        // Create grid
+        const tiles = [];
+        for (let y = 0; y < size; y++) {
+            tiles[y] = [];
+            for (let x = 0; x < size; x++) {
+                const tile = document.createElement("div");
+                tile.className = "tile";
+                tile.dataset.x = x;
+                tile.dataset.y = y;
+                world.appendChild(tile);
+                tiles[y][x] = tile;
+            }
+        }
+
+        function updateView() {
+            // Clear
+            for (let row of tiles) {
+                for (let tile of row) {
+                    tile.classList.remove("player", "frustum", "render-area");
+                }
+            }
+
+            // Set player position
+            tiles[playerY][playerX].classList.add("player");
+
+            // Render Area (larger than frustum)
+            const renderDepth = 15;
+            const renderHalf = Math.tan((80 / 2) * Math.PI / 180);
+            for (let d = 1; d <= renderDepth; d++) {
+                const spread = Math.round(renderHalf * d);
+                for (let offset = -spread; offset <= spread; offset++) {
+                    let tx = playerX;
+                    let ty = playerY;
+                    switch (direction) {
+                        case 'up': ty -= d; tx += offset; break;
+                        case 'down': ty += d; tx += offset; break;
+                        case 'left': tx -= d; ty += offset; break;
+                        case 'right': tx += d; ty += offset; break;
+                    }
+                    if (tx >= 0 && tx < size && ty >= 0 && ty < size) {
+                        tiles[ty][tx].classList.add("render-area");
+                    }
+                }
+            }
+
+            // Frustum View (narrower inside render area)
+            const fov = 60; // degrees
+            const depth = 10; // view distance
+            const half = Math.tan((fov / 2) * Math.PI / 180);
+            for (let d = 1; d <= depth; d++) {
+                const spread = Math.round(half * d);
+                for (let offset = -spread; offset <= spread; offset++) {
+                    let tx = playerX;
+                    let ty = playerY;
+                    switch (direction) {
+                        case 'up': ty -= d; tx += offset; break;
+                        case 'down': ty += d; tx += offset; break;
+                        case 'left': tx -= d; ty += offset; break;
+                        case 'right': tx += d; ty += offset; break;
+                    }
+                    if (tx >= 0 && tx < size && ty >= 0 && ty < size) {
+                        tiles[ty][tx].classList.add("frustum");
+                    }
+                }
+            }
+        }
+
+        function movePlayer(dx, dy, dir) {
+            const nx = playerX + dx;
+            const ny = playerY + dy;
+            if (nx >= 0 && nx < size && ny >= 0 && ny < size) {
+                playerX = nx;
+                playerY = ny;
+                direction = dir;
+                updateView();
+            }
+        }
+
+        document.addEventListener("keydown", e => {
+            if (e.key === "w") movePlayer(0, -1, 'up');
+            if (e.key === "s") movePlayer(0, 1, 'down');
+            if (e.key === "a") movePlayer(-1, 0, 'left');
+            if (e.key === "d") movePlayer(1, 0, 'right');
+        });
+
+        updateView();
+    </script>
+</body>
+
+</html>

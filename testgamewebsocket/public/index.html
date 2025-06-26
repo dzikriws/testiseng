@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Game SPA</title>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    const route = location.pathname;
+    if (route === '/players') {
+      const script = document.createElement('script');
+      script.src = '/players.js';
+      document.body.appendChild(script);
+    } else {
+      const script = document.createElement('script');
+      script.src = '/game.js';
+      document.body.appendChild(script);
+    }
+  </script>
+</body>
+</html>
