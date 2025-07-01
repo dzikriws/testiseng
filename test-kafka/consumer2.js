@@ -6,7 +6,7 @@ const kafka = new Kafka({
 });
 
 const consumer = kafka.consumer({
-    groupId: "nodejs",
+    groupId: "nodejs2",
 
 });
 

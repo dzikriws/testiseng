@@ -12,7 +12,7 @@ await producer.connect();
 
 for (let i = 0; i < 10; i++) {
     await producer.send({
-        topic: "helloworld",
+        topic: "test",
         messages: [
             {
                 "key" : `${i}`,

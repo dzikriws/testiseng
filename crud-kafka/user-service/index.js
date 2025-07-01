@@ -3,7 +3,7 @@ import { TOPICS } from "../kafka/topics.js";
 
 const db = []; // Simulasi in-memory DB
 
-const consumer = kafka.consumer({ groupId: "user-service" });
+const consumer = kafka.consumer({ groupId: "test" });
 const producer = kafka.producer();
 
 await consumer.connect();
