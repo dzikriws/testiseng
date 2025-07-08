@@ -79,7 +79,7 @@ app.get("/", async (req, res) => {
 		// kalau di redis ga ada, ambil dari postgres db
 		if (!data) {
 			pgClient = await pool.connect();
-			const result = await pgClient.query("SELECT DISTINCT data FROM test");
+			const result = await pgClient.query("SELECT * FROM test");
 			data = result.rows[0].data;
 
 			// simpan ke redis juga
